@@ -1,1 +1,15 @@
-
+from .facultad import Facultad
+from .cargo import Cargo
+from .categoria_cargo import CategoriaCargo
+from .tipo_dedicacion import TipoDedicacion
+from .autoridad import Autoridad
+from .departamento import Departamento
+from .especialidad import Especialidad
+from .grado import Grado
+from .materia import Materia
+from .orientacion import Orientacion
+from .plan import Plan
+from .tipo_especialidad import TipoEspecialidad
+from .tipo_documento import TipoDocumento
+from .alumno import Alumno
+from .universidad import Universidad

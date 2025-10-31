@@ -1,1 +1,15 @@
-
+from .facultad_schema import FacultadSchema
+from .cargo_schema import CargoSchema
+from .categoria_cargo_schema import CategoriaCargoSchema
+from .autoridad_schema import AutoridadSchema
+from .departamento_schema import DepartamentoSchema
+from .especialidad_schema import EspecialidadSchema
+from .grado_schema import GradoSchema
+from .materia_schema import MateriaSchema
+from .orientacion_schema import OrientacionSchema
+from .plan_schema import PlanSchema
+from .tipo_especialidad_schema import TipoEspecialidadSchema
+from .tipo_dedicacion_schema import TipoDedicacionSchema
+from .tipo_documento_schema import TipoDocumentoSchema
+from .alumno_schema import AlumnoSchema
+from .universidad_schema import UniversidadSchema
