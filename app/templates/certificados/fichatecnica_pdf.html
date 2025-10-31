@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ficha Tecnica de alumno {{alumno.apellido}} {{alumno.nombre}}</title>
+    <style>
+      .justificar {
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+    <table width="100%">
+      <tr>
+        <td align="left">
+          <img src="{{ logo_ministerio }}" width="150" />
+        </td>
+        <td align="right">
+          <img src="{{ logo_utn }}" width="150" />
+        </td>
+      </tr>
+    </table>
+    <p class="justificar">
+      Ficha Técnica del Alumno: {{alumno.apellido}}, {{alumno.nombre}}
+    </p>
+    <ol>
+      <li>{{alumno.tipoDocumento}}: {{alumno.nroDocumento}}</li>
+      <li>LEGAJO: {{alumno.nroLegajo}}</li>
+      <li>Fecha de Nacimiento: {{alumno.fechaNacimiento}}</li>
+      <li>Carrera: {{alumno.carrera}}</li>
+      <li>Fecha de Ingreso: {{alumno.fechaIngreso}}</li>
+    </ol>
+  </body>
+</html>
