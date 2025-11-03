@@ -5,7 +5,7 @@ Repositorio oficial del proyecto 👉 [https://github.com/Vitatita/SysacadProyec
 
 ## Descripción
 
-**SYSACAD** es una **API REST** desarrollada en **Python** con el framework **Flask**, construida bajo la filosofía **TDD (Test Driven Development)**.  
+**SYSACAD** es una **API REST** desarrollada en **Python** con el framework **Flask**, construida bajo la práctica **TDD (Test Driven Development)**.  
 El sistema está orientado a la **gestión de universidades, usuarios y tareas**, permitiendo realizar operaciones CRUD (crear, leer, actualizar y eliminar) de forma ágil y estructurada.
 
 La aplicación implementa **migraciones de base de datos**, **separación de entornos** (desarrollo, testing y producción) y configuración mediante **variables de entorno (.env)**, lo que asegura flexibilidad y escalabilidad en su implementación.
