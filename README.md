@@ -136,7 +136,7 @@ GET http://localhost:5000/api/v1/universidad/Y10NDOQA72bnPwqK
 - Migraciones gestionadas con Flask-Migrate.  
 - Variables de entorno configurables (.env).  
 - Arquitectura modular y escalable.  
-- Desarrollado bajo la filosofía TDD (Desarrollo Guiado por Pruebas).
+- Desarrollado bajo la práctica TDD (Desarrollo Guiado por Pruebas).
 
 ---
 
