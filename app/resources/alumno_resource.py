@@ -1,40 +1,23 @@
-from flask import Blueprint, jsonify, request
-from app.mapping.alumno_schema import AlumnoSchema
-from app.models.alumno import Alumno
-from app import db
+from flask import Blueprint, request, jsonify
+from app.services.alumno_service import AlumnoService
 
-alumno_bp = Blueprint('alumno', __name__)
-alumno_schema = AlumnoSchema()
-alumnos_schema = AlumnoSchema(many=True)
+# 1. Aquí definimos "alumno_bp" para que deje de dar error "not defined"
+alumno_bp = Blueprint('alumno_bp', __name__)
 
-@alumno_bp.route('/alumnos', methods=['GET'])
-def get_alumnos():
-    alumnos = Alumno.query.all()
-    return jsonify(alumnos_schema.dump(alumnos)), 200
+@alumno_bp.route('/scda/importar/alumnos', methods=['POST'])
+def cargar_alumnos_scda():
+    # 2. Ahora "request" y "jsonify" funcionarán porque los importamos arriba
+    if 'file' not in request.files:
+        return jsonify({"error": "No se envió el archivo"}), 400
+    
+    archivo = request.files['file']
 
-@alumno_bp.route('/alumnos/<string:numero_legajo>', methods=['GET'])
-def get_alumno(numero_legajo):
-    alumno = Alumno.query.get(numero_legajo)
-    if not alumno:
-        return jsonify({'error': 'Alumno no encontrado'}), 404
-    return jsonify(alumno_schema.dump(alumno)), 200
- 
-@alumno_bp.route('/alumnos', methods=['POST'])
-def create_alumno():
-    data = request.get_json()
+    if archivo.filename.upper() != 'ALUMNOS.TXT':
+        return jsonify({"error": "El archivo debe llamarse ALUMNOS.TXT"}), 400
+
     try:
-        alumno = alumno_schema.load(data)
+        # Llamamos al servicio que creamos antes
+        resultado = AlumnoService.importar_archivo_txt(archivo)
+        return jsonify(resultado), 201
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
-    db.session.add(alumno)
-    db.session.commit()
-    return jsonify(alumno_schema.dump(alumno)), 201
-
-@alumno_bp.route('/alumnos/<string:numero_legajo>', methods=['DELETE'])
-def delete_alumno(numero_legajo):
-    alumno = Alumno.query.get(numero_legajo)
-    if not alumno:
-        return jsonify({'error': 'Alumno no encontrado'}), 404
-    db.session.delete(alumno)
-    db.session.commit()
-    return jsonify({'message': 'Alumno eliminado correctamente'}), 200
+        return jsonify({"error_critico": str(e)}), 500

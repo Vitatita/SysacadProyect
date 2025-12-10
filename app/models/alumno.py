@@ -4,15 +4,32 @@ from app import db
 @dataclass
 class Alumno(db.Model):
     __tablename__ = 'alumnos'
+    
+    # ID interno (autoincremental, no viene en el TXT)
     alumno_id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nombre: str = db.Column(db.String(100), nullable=False)
-    apellido: str = db.Column(db.String(100), nullable=False)
-    nro_legajo: str = db.Column(db.String(20), unique=True, nullable=False)
-    fechaIngreso: str = db.Column(db.String(10), nullable=False)
-    fechaNacimiento: str = db.Column(db.String(10), nullable=False)
-    tipoDocumento: str = db.Column(db.String(20), nullable=False)
-    nroDocumento: str = db.Column(db.String(20), nullable=False, unique=True)
-    sexo: str = db.Column(db.String(1), nullable=False)
-    id_universidad = db.Column(db.Integer, db.ForeignKey('universidades.id'))
+    
+    # --- CAMPOS OBLIGATORIOS SEGÚN DOCUMENTO SCDA ---
+    # Campo 1: Facultad (Numérico)
+    facultad_id: int = db.Column(db.Integer, nullable=False)
+    
+    # Campo 2: Tipo Doc (Numérico: 1=DNI, etc.)
+    tipo_documento: int = db.Column(db.Integer, nullable=False)
+    
+    # Campo 3: Nro Documento (Numérico)
+    nro_documento: int = db.Column(db.Integer, nullable=False, unique=True)
+    
+    # Campo 4: Apellido y Nombres (Junto, formato "Apellido, Nombres")
+    nombre_completo: str = db.Column(db.String(150), nullable=False)
+    
+    # Campo 5: Fecha Nacimiento (Formato fecha real Date, no String)
+    fecha_nacimiento: str = db.Column(db.Date, nullable=True)
+    
+    # Campo 6: Sexo ("M" o "F")
+    sexo: str = db.Column(db.String(1), nullable=True)
+    
+    # Campo 7: Legajo (Numérico)
+    nro_legajo: int = db.Column(db.Integer, nullable=True)
 
-    universidad_rel = db.relationship("Universidad", back_populates="alumnos", foreign_keys=[id_universidad])
+    # Puedes mantener tu relación con Universidad si es parte de tu TP anual, 
+    # pero para el importador SCDA no es obligatorio recibirlo en el TXT.
+    id_universidad = db.Column(db.Integer, db.ForeignKey('universidades.id'), nullable=True)
