@@ -15,3 +15,7 @@ from .especialidad_resource import especialidad_bp
 from .categoria_cargo_resource import categoria_cargo_bp
 from .materia_resource import materia_bp
 from .certificado_resource import certificado_bp
+all_blueprints = [
+    alumno_bp,
+    # universidad_bp,  # Agrégalo aquí si lo descomentaste arriba
+]

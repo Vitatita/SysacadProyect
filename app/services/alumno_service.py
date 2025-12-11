@@ -3,36 +3,35 @@ import io
 from datetime import datetime
 from app import db
 from app.models.alumno import Alumno
-from app.utils.retry import retry # Asegúrate de tener este archivo creado
+from app.utils.retry import retry  # Asegúrate de tener el archivo app/utils/retry.py
 
 class AlumnoService:
-    # ... (Tus métodos CRUD actuales pueden quedarse si los necesitas) ...
-
+    
     @staticmethod
-    def importar_archivo_scda(archivo):
+    def importar_archivo_txt(archivo):
         """
-        Lee el archivo ALUMNOS.TXT del SCDA y guarda los alumnos.
+        Lee el archivo ALUMNOS.TXT, parsea los datos y los guarda.
+        Esta es la función que te faltaba.
         """
-        # Convertir bytes a string
+        # 1. Decodificar bytes a string
         stream = io.StringIO(archivo.read().decode("utf-8"), newline=None)
-        csv_reader = csv.reader(stream, delimiter=',') # SCDA separado por comas
+        csv_reader = csv.reader(stream, delimiter=',') 
 
         procesados = 0
         errores = 0
-        
+        lista_errores = []
+
         for row in csv_reader:
             try:
-                # Mapeo según orden de columnas SCDA:
-                # row[0]=Facultad, row[1]=TipoDoc, row[2]=DNI, row[3]=Nombre...
-                
-                # Convertir fecha dd/mm/aaaa a objeto Date
+                # Parsear fecha si existe (columna 4)
                 fecha_nac = None
-                if row[4]:
+                if len(row) > 4 and row[4]:
                     try:
                         fecha_nac = datetime.strptime(row[4], '%d/%m/%Y').date()
                     except ValueError:
-                        pass # Si la fecha está mal, la dejamos Null o manejamos error
+                        pass 
 
+                # Crear objeto Alumno
                 nuevo_alumno = Alumno(
                     facultad_id=int(row[0]),
                     tipo_documento=int(row[1]),
@@ -40,21 +39,26 @@ class AlumnoService:
                     nombre_completo=row[3], 
                     fecha_nacimiento=fecha_nac,
                     sexo=row[5],
-                    nro_legajo=int(row[6]) if row[6] else None
+                    nro_legajo=int(row[6]) if len(row) > 6 and row[6] else None
                 )
-                
-                # Llamamos al guardar CON RETRY (Requisito Parcial 2)
+
+                # Guardar con Retry
                 AlumnoService.guardar_con_retry(nuevo_alumno)
                 procesados += 1
-                
+            
             except Exception as e:
                 errores += 1
-                print(f"Error en fila: {e}")
+                lista_errores.append(f"Fila {procesados+errores}: {str(e)}")
 
-        return {"procesados": procesados, "errores": errores}
+        return {
+            "estado": "Procesado",
+            "total_guardados": procesados, 
+            "total_fallidos": errores, 
+            "detalle_errores": lista_errores
+        }
 
     @staticmethod
-    @retry(max_attempts=3, delay=1.0) # <--- ¡ESTO ES VITAL!
+    @retry(max_attempts=3, delay=1.0)
     def guardar_con_retry(alumno):
         db.session.add(alumno)
         db.session.commit()

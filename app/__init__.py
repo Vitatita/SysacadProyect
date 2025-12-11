@@ -1,25 +1,45 @@
-import logging
-from flask import Flask
 import os
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from app.config import config
+from flask_migrate import Migrate
+from flask_marshmallow import Marshmallow
+from flask_caching import Cache
+from hashids import Hashids
 
+# Inicializamos las extensiones fuera de la función
 db = SQLAlchemy()
+migrate = Migrate()
+ma = Marshmallow()
+cache = Cache()
 
-def create_app() -> Flask:
-    """
-    Using an Application Factory
-    Ref: Book Flask Web Development Page 78
-    """
-    app_context = os.getenv('FLASK_CONTEXT')
-    #https://flask.palletsprojects.com/en/stable/api/#flask.Flask
+# Configuración básica de hashids
+hashids = Hashids(salt="mi_secreto_examen", min_length=8)
+
+def create_app():
     app = Flask(__name__)
-    f = config.factory(app_context if app_context else 'development')
-    app.config.from_object(f)
-    db.init_app(app)
 
-    @app.shell_context_processor    
-    def ctx():
-        return {"app": app}
+    # --- 1. CONFIGURACIÓN DIRECTA (Para evitar errores de lectura) ---
+    # Le decimos explícitamente dónde crear la base de datos local
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///basedatos_local.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = 'clave_secreta_para_el_examen'
+    app.config['CACHE_TYPE'] = 'SimpleCache'
+    # ---------------------------------------------------------------
+
+    # --- 2. INICIALIZAR EXTENSIONES CON LA APP YA CONFIGURADA ---
+    db.init_app(app)
+    migrate.init_app(app, db)
+    ma.init_app(app)
+    cache.init_app(app)
+
+    # --- 3. REGISTRAR TUS RUTAS (BLUEPRINTS) ---
+    # Importamos aquí para evitar errores circulares
+    from app.resources import all_blueprints
     
+    for bp in all_blueprints:
+        app.register_blueprint(bp, url_prefix="/api/v1")
+
+    # Guardamos hashids en la app por si lo usas luego
+    app.hashids = hashids
+
     return app
